@@ -128,7 +128,24 @@ const App: React.FC = () => {
       >
         <Box sx={{ width: 400, padding: "16px", overflow: "auto" }}>
           <Typography variant="h4" gutterBottom>
-            JSON Preview
+            JSON Lesson
+          </Typography>
+          <pre
+            style={{
+              background: "#f4f4f4",
+              padding: "16px",
+              borderRadius: "8px",
+              overflowX: "auto",
+            }}
+          >
+            {JSON.stringify(
+              { content: content.map(({ id, ...rest }) => rest) }, // Remove `id` field
+              null,
+              2
+            )}
+          </pre>
+          <Typography variant="h4" gutterBottom>
+            JSON Debug
           </Typography>
           <pre
             style={{
