@@ -1,26 +1,27 @@
 import React, { useState } from "react";
-import { ContentElement, TextListElementType, ListEntry } from "../types/Types";
+import { ContentElement, TextListElementType, ListEntry, ContentType } from "../types/LessonTypes";
 import { v4 as uuidv4 } from "uuid";
+import Dropdown from "./Dropdown";
+import { Button } from "@mui/material";
 
 interface Props {
   addContentElement: (element: ContentElement) => void;
 }
 
-// Define valid content types
-type ContentType =
-  | "text"
-  | "textList"
-  | "title"
-  | "subtitle"
-  | "image"
-  | "curiosity"
-  | "important"
-  | "books"
-  | "author";
-
 const ElementForm: React.FC<Props> = ({ addContentElement }) => {
   const [type, setType] = useState<ContentType>("text");
   const [data, setData] = useState<any>({});
+  const typeOptions = [
+    { value: "text", label: "Text" },
+    { value: "textList", label: "Text List" },
+    { value: "title", label: "Title" },
+    { value: "subtitle", label: "Subtitle" },
+    { value: "image", label: "Image" },
+    { value: "curiosity", label: "Curiosity" },
+    { value: "important", label: "Important" },
+    { value: "books", label: "Books" },
+    { value: "author", label: "Author" },
+  ];
 
   const handleAddElement = () => {
     const element: ContentElement = { id: uuidv4(), ...data };
@@ -30,23 +31,13 @@ const ElementForm: React.FC<Props> = ({ addContentElement }) => {
 
   return (
     <div>
-      <select
+      <Dropdown
         value={type}
-        onChange={(e) => {
-          setType(e.target.value as ContentType);
-          setData({});
-        }}
-      >
-        <option value="text">Text</option>
-        <option value="textList">Text List</option>
-        <option value="title">Title</option>
-        <option value="subtitle">Subtitle</option>
-        <option value="image">Image</option>
-        <option value="curiosity">Curiosity</option>
-        <option value="important">Important</option>
-        <option value="books">Books</option>
-        <option value="author">Author</option>
-      </select>
+        onChange={(value) => setType(value as ContentType)}
+        options={typeOptions}
+        label="Select Content Type"
+        width="400px"
+      />
 
       {type === "text" && (
         <div>
@@ -67,6 +58,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement }) => {
             onChange={(e) =>
               setData({ ...data, type: e.target.value as TextListElementType })
             }
+            className="dropdonw"
           >
             <option value={TextListElementType.DASH}>Dash</option>
             <option value={TextListElementType.POINT}>Point</option>
@@ -132,7 +124,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement }) => {
 
       {/* Add similar handling for curiosity, important, books, and author */}
 
-      <button onClick={handleAddElement}>Add Element</button>
+      <Button onClick={handleAddElement}>Add Element</Button>
     </div>
   );
 };

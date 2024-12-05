@@ -1,11 +1,19 @@
 import React, { useState } from "react";
 import ElementForm from "./components/ElementForm";
 import ContentPreview from "./components/ContentPreview";
-import { ContentElement } from "./types/Types";
+import { ContentElement } from "./types/LessonTypes";
 import { stripIds } from "./utils/stripIds";
+import { Button } from "@mui/material";
+import { Areas } from "./types/Areas";
+import Dropdown from "./components/Dropdown";
 
 const App: React.FC = () => {
   const [content, setContent] = useState<ContentElement[]>([]);
+  const [area, setArea] = useState<Areas>(Areas.ZEN);
+  const areaOptions = Object.values(Areas).map((area) => ({
+    value: area as string,
+    label: area.replace(/_/g, " "), // Convert "TAOISM" to "Taoism" if needed
+  }));
 
   const addContentElement = (element: ContentElement) => {
     setContent([...content, element]);
@@ -30,6 +38,14 @@ const App: React.FC = () => {
   return (
     <div className="parent">
       <h1>Lesson/Rule Generator</h1>
+      <h2>Area</h2>
+      <Dropdown
+        value={area}
+        onChange={(area: string) => setArea(area as Areas)}
+        options={areaOptions}
+        label="Select Area"
+        width="400px"
+      />
       <h2>Add Content</h2>
       <ElementForm addContentElement={addContentElement} />
       <h2>Preview</h2>
@@ -38,7 +54,7 @@ const App: React.FC = () => {
         setContent={setContent}
         removeContentElement={removeContentElement}
       />
-      <button onClick={exportContentAsJson}>Export as JSON</button>
+      <Button onClick={exportContentAsJson}>Export as JSON</Button>
     </div>
   );
 };

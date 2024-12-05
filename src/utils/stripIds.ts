@@ -1,4 +1,4 @@
-import { ContentElement } from "../types/Types";
+import { ContentElement } from "../types/LessonTypes";
 
 export function stripIds(
   elements: ContentElement[]

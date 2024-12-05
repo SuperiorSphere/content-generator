@@ -6,7 +6,7 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { ContentElement } from "../types/Types";
+import { ContentElement } from "../types/LessonTypes";
 
 interface Props {
   content: ContentElement[];
