@@ -6,6 +6,7 @@ import { stripIds } from "./utils/stripIds";
 import { Box, Button, Typography } from "@mui/material";
 import { Areas } from "./types/Areas";
 import Dropdown from "./components/Dropdown";
+import { v4 as uuidv4 } from "uuid";
 
 const App: React.FC = () => {
   const [content, setContent] = useState<ContentElement[]>([]);
@@ -46,8 +47,13 @@ const App: React.FC = () => {
     reader.onload = (e) => {
       try {
         const json = JSON.parse(e.target?.result as string);
+        console.log("Upload json", json);
         if (json && Array.isArray(json.content)) {
-          setContent(json.content as ContentElement[]);
+          const contentWithIds = json.content.map((element: any) => ({
+            id: uuidv4(), // Ensure every element has a unique id
+            ...element,
+          }));
+          setContent(contentWithIds as ContentElement[]);
         } else {
           alert("Invalid JSON structure. Make sure it matches LessonContent.");
         }
@@ -81,7 +87,7 @@ const App: React.FC = () => {
       >
         Add Content
       </Typography>
-      <ElementForm addContentElement={addContentElement} area={area}/>
+      <ElementForm addContentElement={addContentElement} area={area} />
       <Typography variant="h2" gutterBottom sx={{ marginTop: "20px" }}>
         Preview
       </Typography>

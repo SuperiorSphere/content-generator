@@ -4,7 +4,6 @@ import {
   TextListElementTypeEnum,
   ListEntry,
   ContentType,
-  TextElement,
   Book,
 } from "../types/LessonTypes";
 import { v4 as uuidv4 } from "uuid";
@@ -102,7 +101,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
             <TextInput
               label="Text"
               value={data.text}
-              onChange={(value) => setData({ text: value } as TextElement)}
+              onChange={(value) => setData({ text: value || "" })}
               placeholder="Enter some text"
               fullWidth
             />
@@ -189,7 +188,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
             <TextInput
               label="Title"
               value={data.text}
-              onChange={(value) => setData({ title: value })}
+              onChange={(value) => setData({ title: value || "" })}
               placeholder="Enter some text"
               fullWidth
             />
@@ -201,7 +200,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
             <TextInput
               label="Subtitle"
               value={data.text}
-              onChange={(value) => setData({ subtitle: value })}
+              onChange={(value) => setData({ subtitle: value || "" })}
               placeholder="Enter some text"
               fullWidth
             />
@@ -213,7 +212,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
             <TextInput
               label="Curiosity"
               value={data.text}
-              onChange={(value) => setData({ curiosity: value })}
+              onChange={(value) => setData({ curiosity: value || "" })}
               placeholder="Enter some text"
               fullWidth
             />
@@ -225,7 +224,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
             <TextInput
               label="Important"
               value={data.text}
-              onChange={(value) => setData({ important: value })}
+              onChange={(value) => setData({ important: value || "" })}
               placeholder="Enter some text"
               fullWidth
             />
@@ -262,14 +261,22 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
             />
             <Dropdown
               label="File Extension"
-              value={data.extension || "jpg"}
-              onChange={(value) => setExtension(value)}
+              value={extension}
+              onChange={(value) => {
+                setExtension(value);
+                setData((prevData: any) => {
+                  return {
+                    ...prevData,
+                    image: `${area.toLowerCase()}/${
+                      prevData.key || ""
+                    }.${value}`,
+                  };
+                });
+              }}
               options={[
                 { label: "JPG", value: "jpg" },
                 { label: "PNG", value: "png" },
-                { label: "GIF", value: "gif" },
                 { label: "WEBP", value: "webp" },
-                { label: "SVG", value: "svg" },
               ]}
               width="300px"
             />
