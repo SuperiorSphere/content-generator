@@ -69,7 +69,7 @@ const ContentPreview: React.FC<Props> = ({
                       {...provided.dragHandleProps}
                       style={{
                         ...provided.draggableProps.style,
-                        position: "relative", // For positioning the remove button
+                        //position: "relative", // For positioning the remove button
                         padding: "10px",
                         marginBottom: "10px",
                         background: "#fff",
