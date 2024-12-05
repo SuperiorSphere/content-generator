@@ -7,6 +7,7 @@ interface Props {
   onChange: (value: string) => void;
   placeholder?: string;
   fullWidth?: boolean;
+  required?: boolean;
 }
 
 const TextInput: React.FC<Props> = ({
@@ -15,6 +16,7 @@ const TextInput: React.FC<Props> = ({
   onChange,
   placeholder,
   fullWidth = false,
+  required = false,
 }) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     onChange(event.target.value);
@@ -30,6 +32,7 @@ const TextInput: React.FC<Props> = ({
         variant="outlined"
         fullWidth={fullWidth}
         multiline
+        required={required}
       />
     </Box>
   );

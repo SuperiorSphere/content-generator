@@ -27,11 +27,13 @@ export interface ImageElement extends Basic {
   caption?: string;
 }
 
-export enum TextListElementType {
+export enum TextListElementTypeEnum {
   DASH = "DASH",
   POINT = "POINT",
   NUMBER = "NUMBER",
 }
+
+export type TextListElementType = "DASH" | "NUMBER" | "POINT";
 
 export interface ListEntry extends Basic {
   title?: string;
