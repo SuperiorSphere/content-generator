@@ -47,6 +47,12 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
     const element: ContentElement = { id: uuidv4(), ...data };
     addContentElement(element);
     setData({});
+    setCurrentItem("");
+    setCurrentBook({
+      title: "",
+      author: "",
+    });
+    setExtension("jpg");
   };
 
   const handleAddListItem = () => {
@@ -438,7 +444,11 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
         )}
       </Box>
 
-      <Button variant="outlined" onClick={handleAddElement}>
+      <Button
+        variant="outlined"
+        onClick={handleAddElement}
+        disabled={isEmpty(data) || Object.values(data).every((value) => !value)}
+      >
         Add {type}
       </Button>
     </div>

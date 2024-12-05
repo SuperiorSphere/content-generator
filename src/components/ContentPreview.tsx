@@ -75,239 +75,238 @@ const ContentPreview: React.FC<Props> = ({
                         background: "#fff",
                         border: "1px solid #ddd",
                         borderRadius: "5px",
+                        display: "flex",
+                        gap: "12px",
                       }}
                     >
-                      {/* Conditional Rendering for Different Item Types */}
-                      {(() => {
-                        if ("title" in item) {
-                          return (
-                            <Typography variant="h2">{item.title}</Typography>
-                          );
-                        } else if ("subtitle" in item) {
-                          return (
-                            <Typography variant="h4">
-                              {item.subtitle}
-                            </Typography>
-                          );
-                        } else if ("text" in item) {
-                          return (
-                            <Typography className="pMedium">
-                              {item.text}
-                            </Typography>
-                          );
-                        } else if ("image" in item) {
-                          const finalUrl =
-                            DEV_IMAGE_URL +
-                            encodeURIComponent(item.image) +
-                            "?alt=media";
-                          return (
-                            <Box sx={{ padding: "8px", paddingTop: "20px" }}>
-                              <ImageWithFallback
-                                imageUrl={finalUrl}
-                                caption={item.caption}
-                              />
-                            </Box>
-                          );
-                        } else if ("textList" in item) {
-                          return (
-                            <Box sx={{ padding: "8px", paddingTop: "20px" }}>
-                              {item.textList.map((elem, pos) => {
-                                return (
-                                  <Typography>{`${getListCharacter(
-                                    item.type as TextListElementTypeEnum,
-                                    pos + 1
-                                  )} ${elem.text}`}</Typography>
-                                );
-                              })}
-                            </Box>
-                          );
-                        } else if ("curiosity" in item) {
-                          return (
-                            <Box
-                              sx={{
-                                padding: "8px",
-                                backgroundColor: "#C2950C",
-                              }}
-                            >
-                              <Typography variant="h4">Curiosity</Typography>
-                              <Typography className="pMedium">
-                                {item.curiosity}
+                      <Box sx={{ flexGrow: 1 }}>
+                        {(() => {
+                          if ("title" in item) {
+                            return (
+                              <Typography variant="h2">{item.title}</Typography>
+                            );
+                          } else if ("subtitle" in item) {
+                            return (
+                              <Typography variant="h4">
+                                {item.subtitle}
                               </Typography>
-                            </Box>
-                          );
-                        } else if ("important" in item) {
-                          return (
-                            <Box
-                              sx={{
-                                padding: "8px",
-                                backgroundColor: "#146173",
-                              }}
-                            >
-                              <Typography variant="h4">Important</Typography>
+                            );
+                          } else if ("text" in item) {
+                            return (
                               <Typography className="pMedium">
-                                {item.important}
+                                {item.text}
                               </Typography>
-                            </Box>
-                          );
-                        } else if ("books" in item) {
-                          return (
-                            <Box>
-                              <Typography variant="h4">Books</Typography>
-                              {item.books.map((book: Book, bookIndex) => (
-                                <Typography key={bookIndex}>
-                                  <strong>{book.title}</strong> by {book.author}
+                            );
+                          } else if ("image" in item) {
+                            const finalUrl =
+                              DEV_IMAGE_URL +
+                              encodeURIComponent(item.image) +
+                              "?alt=media";
+                            return (
+                              <Box sx={{ padding: "8px", paddingTop: "20px" }}>
+                                <ImageWithFallback
+                                  imageUrl={finalUrl}
+                                  caption={item.caption}
+                                />
+                              </Box>
+                            );
+                          } else if ("textList" in item) {
+                            return (
+                              <Box sx={{ padding: "8px", paddingTop: "20px" }}>
+                                {item.textList.map((elem, pos) => {
+                                  return (
+                                    <Typography>{`${getListCharacter(
+                                      item.type as TextListElementTypeEnum,
+                                      pos + 1
+                                    )} ${elem.text}`}</Typography>
+                                  );
+                                })}
+                              </Box>
+                            );
+                          } else if ("curiosity" in item) {
+                            return (
+                              <Box
+                                sx={{
+                                  padding: "8px",
+                                  backgroundColor: "#C2950C",
+                                }}
+                              >
+                                <Typography variant="h4">Curiosity</Typography>
+                                <Typography className="pMedium">
+                                  {item.curiosity}
                                 </Typography>
-                              ))}
-                            </Box>
-                          );
-                        } else if (
-                          "books" in item &&
-                          Array.isArray(item.books)
-                        ) {
-                          return (
-                            <Box>
-                              <Typography variant="h4">Books</Typography>
-                              {item.books.map(
-                                (book: Book, bookIndex: number) => (
+                              </Box>
+                            );
+                          } else if ("important" in item) {
+                            return (
+                              <Box
+                                sx={{
+                                  padding: "8px",
+                                  backgroundColor: "#146173",
+                                }}
+                              >
+                                <Typography variant="h4">Important</Typography>
+                                <Typography className="pMedium">
+                                  {item.important}
+                                </Typography>
+                              </Box>
+                            );
+                          } else if ("books" in item) {
+                            return (
+                              <Box>
+                                <Typography variant="h4">Books</Typography>
+                                {item.books.map((book: Book, bookIndex) => (
                                   <Typography key={bookIndex}>
                                     <strong>{book.title}</strong> by{" "}
                                     {book.author}
                                   </Typography>
-                                )
-                              )}
-                            </Box>
-                          );
-                        } else if ("author" in item) {
-                          const {
-                            fullName,
-                            url,
-                            description,
-                            secondaryUrl,
-                            photoUrl,
-                            instagram,
-                            linkedin,
-                            facebook,
-                            twitter,
-                            blog,
-                          } = item.author;
-                          return (
-                            <Box>
-                              <Typography variant="h4">Author</Typography>
-                              <Typography>
-                                <strong>Name:</strong> {fullName}
-                              </Typography>
-                              <Typography>
-                                <strong>Description:</strong> {description}
-                              </Typography>
-                              {url && (
+                                ))}
+                              </Box>
+                            );
+                          } else if (
+                            "books" in item &&
+                            Array.isArray(item.books)
+                          ) {
+                            return (
+                              <Box sx={{ flexGrow: 1 }}>
+                                <Typography variant="h4">Books</Typography>
+                                {item.books.map(
+                                  (book: Book, bookIndex: number) => (
+                                    <Typography key={bookIndex}>
+                                      <strong>{book.title}</strong> by{" "}
+                                      {book.author}
+                                    </Typography>
+                                  )
+                                )}
+                              </Box>
+                            );
+                          } else if ("author" in item) {
+                            const {
+                              fullName,
+                              url,
+                              description,
+                              secondaryUrl,
+                              photoUrl,
+                              instagram,
+                              linkedin,
+                              facebook,
+                              twitter,
+                              blog,
+                            } = item.author;
+                            return (
+                              <Box>
+                                <Typography variant="h4">Author</Typography>
                                 <Typography>
-                                  <strong>URL:</strong>{" "}
-                                  <a
-                                    href={url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {url}
-                                  </a>
+                                  <strong>Name:</strong> {fullName}
                                 </Typography>
-                              )}
-                              {secondaryUrl && (
                                 <Typography>
-                                  <strong>Secondary URL:</strong>{" "}
-                                  <a
-                                    href={secondaryUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {secondaryUrl}
-                                  </a>
+                                  <strong>Description:</strong> {description}
                                 </Typography>
-                              )}
-                              {photoUrl && (
-                                <Typography>
-                                  <strong>Photo URL:</strong>{" "}
-                                  <a
-                                    href={photoUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {photoUrl}
-                                  </a>
-                                </Typography>
-                              )}
-                              {instagram && (
-                                <Typography>
-                                  <strong>Instagram:</strong>{" "}
-                                  <a
-                                    href={instagram}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {instagram}
-                                  </a>
-                                </Typography>
-                              )}
-                              {linkedin && (
-                                <Typography>
-                                  <strong>LinkedIn:</strong>{" "}
-                                  <a
-                                    href={linkedin}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {linkedin}
-                                  </a>
-                                </Typography>
-                              )}
-                              {facebook && (
-                                <Typography>
-                                  <strong>Facebook:</strong>{" "}
-                                  <a
-                                    href={facebook}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {facebook}
-                                  </a>
-                                </Typography>
-                              )}
-                              {twitter && (
-                                <Typography>
-                                  <strong>Twitter:</strong>{" "}
-                                  <a
-                                    href={twitter}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {twitter}
-                                  </a>
-                                </Typography>
-                              )}
-                              {blog && (
-                                <Typography>
-                                  <strong>Blog:</strong>{" "}
-                                  <a
-                                    href={blog}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    {blog}
-                                  </a>
-                                </Typography>
-                              )}
-                            </Box>
-                          );
-                        }
-                        return <p>Other Content</p>;
-                      })()}
-
-                      {/* Remove Button as a Cross */}
+                                {url && (
+                                  <Typography>
+                                    <strong>URL:</strong>{" "}
+                                    <a
+                                      href={url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {url}
+                                    </a>
+                                  </Typography>
+                                )}
+                                {secondaryUrl && (
+                                  <Typography>
+                                    <strong>Secondary URL:</strong>{" "}
+                                    <a
+                                      href={secondaryUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {secondaryUrl}
+                                    </a>
+                                  </Typography>
+                                )}
+                                {photoUrl && (
+                                  <Typography>
+                                    <strong>Photo URL:</strong>{" "}
+                                    <a
+                                      href={photoUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {photoUrl}
+                                    </a>
+                                  </Typography>
+                                )}
+                                {instagram && (
+                                  <Typography>
+                                    <strong>Instagram:</strong>{" "}
+                                    <a
+                                      href={instagram}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {instagram}
+                                    </a>
+                                  </Typography>
+                                )}
+                                {linkedin && (
+                                  <Typography>
+                                    <strong>LinkedIn:</strong>{" "}
+                                    <a
+                                      href={linkedin}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {linkedin}
+                                    </a>
+                                  </Typography>
+                                )}
+                                {facebook && (
+                                  <Typography>
+                                    <strong>Facebook:</strong>{" "}
+                                    <a
+                                      href={facebook}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {facebook}
+                                    </a>
+                                  </Typography>
+                                )}
+                                {twitter && (
+                                  <Typography>
+                                    <strong>Twitter:</strong>{" "}
+                                    <a
+                                      href={twitter}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {twitter}
+                                    </a>
+                                  </Typography>
+                                )}
+                                {blog && (
+                                  <Typography>
+                                    <strong>Blog:</strong>{" "}
+                                    <a
+                                      href={blog}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      {blog}
+                                    </a>
+                                  </Typography>
+                                )}
+                              </Box>
+                            );
+                          }
+                          return <p>Other Content</p>;
+                        })()}
+                      </Box>
                       <button
                         onClick={() => removeContentElement(index)}
                         style={{
-                          position: "absolute",
-                          top: "5px",
-                          right: "5px",
                           background: "transparent",
                           border: "none",
                           color: "black",
