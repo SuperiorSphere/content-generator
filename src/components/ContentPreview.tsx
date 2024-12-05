@@ -7,6 +7,12 @@ import {
   DropResult,
 } from "@hello-pangea/dnd";
 import { ContentElement } from "../types/LessonTypes";
+import { Box, Typography } from "@mui/material";
+import ImageWithFallback from "./ImageWithFallback";
+import { isEmpty } from "lodash";
+
+const DEV_IMAGE_URL =
+  "https://firebasestorage.googleapis.com/v0/b/superiorsphere-prod.appspot.com/o/images%2F";
 
 interface Props {
   content: ContentElement[];
@@ -73,6 +79,21 @@ const ContentPreview: React.FC<Props> = ({
                           return <p>Subtitle: {item.subtitle}</p>;
                         } else if ("text" in item) {
                           return <p>Text: {item.text}</p>;
+                        } else if ("image" in item) {
+                          const finalUrl =
+                            DEV_IMAGE_URL +
+                            encodeURIComponent(item.image) +
+                            "?alt=media";
+                          return (
+                            <Box>
+                              <ImageWithFallback imageUrl={finalUrl} />
+                              {!isEmpty(item.caption) && (
+                                <Typography sx={{ textAlign: "right" }}>
+                                  {item.caption}
+                                </Typography>
+                              )}
+                            </Box>
+                          );
                         }
                         return <p>Other Content</p>;
                       })()}
