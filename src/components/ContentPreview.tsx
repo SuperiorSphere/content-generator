@@ -6,7 +6,11 @@ import {
   Draggable,
   DropResult,
 } from "@hello-pangea/dnd";
-import { ContentElement, TextListElementTypeEnum } from "../types/LessonTypes";
+import {
+  Book,
+  ContentElement,
+  TextListElementTypeEnum,
+} from "../types/LessonTypes";
 import { Box, Typography } from "@mui/material";
 import ImageWithFallback from "./ImageWithFallback";
 import { getListCharacter } from "../utils/listUtils";
@@ -143,6 +147,154 @@ const ContentPreview: React.FC<Props> = ({
                               <Typography className="pMedium">
                                 {item.important}
                               </Typography>
+                            </Box>
+                          );
+                        } else if ("books" in item) {
+                          return (
+                            <Box>
+                              <Typography variant="h4">Books</Typography>
+                              {item.books.map((book: Book, bookIndex) => (
+                                <Typography key={bookIndex}>
+                                  <strong>{book.title}</strong> by {book.author}
+                                </Typography>
+                              ))}
+                            </Box>
+                          );
+                        } else if (
+                          "books" in item &&
+                          Array.isArray(item.books)
+                        ) {
+                          return (
+                            <Box>
+                              <Typography variant="h4">Books</Typography>
+                              {item.books.map(
+                                (book: Book, bookIndex: number) => (
+                                  <Typography key={bookIndex}>
+                                    <strong>{book.title}</strong> by{" "}
+                                    {book.author}
+                                  </Typography>
+                                )
+                              )}
+                            </Box>
+                          );
+                        } else if ("author" in item) {
+                          const {
+                            fullName,
+                            url,
+                            description,
+                            secondaryUrl,
+                            photoUrl,
+                            instagram,
+                            linkedin,
+                            facebook,
+                            twitter,
+                            blog,
+                          } = item.author;
+                          return (
+                            <Box>
+                              <Typography variant="h4">Author</Typography>
+                              <Typography>
+                                <strong>Name:</strong> {fullName}
+                              </Typography>
+                              <Typography>
+                                <strong>Description:</strong> {description}
+                              </Typography>
+                              {url && (
+                                <Typography>
+                                  <strong>URL:</strong>{" "}
+                                  <a
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {url}
+                                  </a>
+                                </Typography>
+                              )}
+                              {secondaryUrl && (
+                                <Typography>
+                                  <strong>Secondary URL:</strong>{" "}
+                                  <a
+                                    href={secondaryUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {secondaryUrl}
+                                  </a>
+                                </Typography>
+                              )}
+                              {photoUrl && (
+                                <Typography>
+                                  <strong>Photo URL:</strong>{" "}
+                                  <a
+                                    href={photoUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {photoUrl}
+                                  </a>
+                                </Typography>
+                              )}
+                              {instagram && (
+                                <Typography>
+                                  <strong>Instagram:</strong>{" "}
+                                  <a
+                                    href={instagram}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {instagram}
+                                  </a>
+                                </Typography>
+                              )}
+                              {linkedin && (
+                                <Typography>
+                                  <strong>LinkedIn:</strong>{" "}
+                                  <a
+                                    href={linkedin}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {linkedin}
+                                  </a>
+                                </Typography>
+                              )}
+                              {facebook && (
+                                <Typography>
+                                  <strong>Facebook:</strong>{" "}
+                                  <a
+                                    href={facebook}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {facebook}
+                                  </a>
+                                </Typography>
+                              )}
+                              {twitter && (
+                                <Typography>
+                                  <strong>Twitter:</strong>{" "}
+                                  <a
+                                    href={twitter}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {twitter}
+                                  </a>
+                                </Typography>
+                              )}
+                              {blog && (
+                                <Typography>
+                                  <strong>Blog:</strong>{" "}
+                                  <a
+                                    href={blog}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                  >
+                                    {blog}
+                                  </a>
+                                </Typography>
+                              )}
                             </Box>
                           );
                         }

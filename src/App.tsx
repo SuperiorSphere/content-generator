@@ -3,7 +3,7 @@ import ElementForm from "./components/ElementForm";
 import ContentPreview from "./components/ContentPreview";
 import { ContentElement, LessonContent } from "./types/LessonTypes";
 import { stripIds } from "./utils/stripIds";
-import { Box, Button, Typography } from "@mui/material";
+import { Box, Button, Typography, Drawer } from "@mui/material";
 import { Areas } from "./types/Areas";
 import Dropdown from "./components/Dropdown";
 import { v4 as uuidv4 } from "uuid";
@@ -11,11 +11,13 @@ import { v4 as uuidv4 } from "uuid";
 const App: React.FC = () => {
   const [content, setContent] = useState<ContentElement[]>([]);
   const [area, setArea] = useState<Areas>(Areas.ZEN);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  console.log(JSON.stringify({ content }, null, 2));
+
   const areaOptions = Object.values(Areas).map((area) => ({
     value: area as string,
     label: area.replace(/_/g, " "),
   }));
-  console.log(JSON.stringify({ content }, null, 2));
 
   const addContentElement = (element: ContentElement) => {
     setContent([...content, element]);
@@ -30,7 +32,6 @@ const App: React.FC = () => {
     const contentWithoutIds = stripIds(content) as ContentElement[]; // Remove `id` fields
     const lessonContent: LessonContent = { content: contentWithoutIds };
     const json = JSON.stringify(lessonContent, null, 2);
-    console.log(json);
     const blob = new Blob([json], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -47,7 +48,6 @@ const App: React.FC = () => {
     reader.onload = (e) => {
       try {
         const json = JSON.parse(e.target?.result as string);
-        console.log("Upload json", json);
         if (json && Array.isArray(json.content)) {
           const contentWithIds = json.content.map((element: any) => ({
             id: uuidv4(), // Ensure every element has a unique id
@@ -66,51 +66,83 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="parent">
-      <Typography variant="h1" gutterBottom>
-        Lesson/Rule Generator
-      </Typography>
-      <Typography variant="h2" gutterBottom>
-        Area
-      </Typography>
-      <Dropdown
-        value={area}
-        onChange={(area: string) => setArea(area as Areas)}
-        options={areaOptions}
-        label="Select Area"
-        width="400px"
-      />
-      <Typography
-        variant="h2"
-        gutterBottom
-        sx={{ marginTop: "12px", marginBottom: "16px" }}
-      >
-        Add Content
-      </Typography>
-      <ElementForm addContentElement={addContentElement} area={area} />
-      <Typography variant="h2" gutterBottom sx={{ marginTop: "20px" }}>
-        Preview
-      </Typography>
-      <ContentPreview
-        content={content}
-        setContent={setContent}
-        removeContentElement={removeContentElement}
-      />
-      <Box sx={{ display: "flex", gap: 2, marginTop: "16px" }}>
-        <Button variant="contained" onClick={exportContentAsJson}>
-          Export as JSON
-        </Button>
-        <Button variant="contained" component="label">
-          Upload JSON
-          <input
-            type="file"
-            accept="application/json"
-            onChange={handleJsonUpload}
-            hidden
-          />
-        </Button>
+    <Box sx={{ display: "flex", height: "100vh" }}>
+      {/* Main Content Area */}
+      <Box sx={{ flex: 3, padding: "16px" }}>
+        <Typography variant="h1" gutterBottom>
+          Lesson/Rule Generator
+        </Typography>
+        <Typography variant="h2" gutterBottom>
+          Area
+        </Typography>
+        <Dropdown
+          value={area}
+          onChange={(area: string) => setArea(area as Areas)}
+          options={areaOptions}
+          label="Select Area"
+          width="400px"
+        />
+        <Typography
+          variant="h2"
+          gutterBottom
+          sx={{ marginTop: "12px", marginBottom: "16px" }}
+        >
+          Add Content
+        </Typography>
+        <ElementForm addContentElement={addContentElement} area={area} />
+        <Typography variant="h2" gutterBottom sx={{ marginTop: "20px" }}>
+          Preview
+        </Typography>
+        <ContentPreview
+          content={content}
+          setContent={setContent}
+          removeContentElement={removeContentElement}
+        />
+        <Box sx={{ display: "flex", gap: 2, marginTop: "16px" }}>
+          <Button variant="contained" onClick={exportContentAsJson}>
+            Export as JSON
+          </Button>
+          <Button variant="contained" component="label">
+            Upload JSON
+            <input
+              type="file"
+              accept="application/json"
+              onChange={handleJsonUpload}
+              hidden
+            />
+          </Button>
+          <Button
+            variant="outlined"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            {isSidebarOpen ? "Close Sidebar" : "View JSON"}
+          </Button>
+        </Box>
       </Box>
-    </div>
+
+      {/* Sidebar for JSON Preview */}
+      <Drawer
+        anchor="right"
+        open={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+      >
+        <Box sx={{ width: 400, padding: "16px", overflow: "auto" }}>
+          <Typography variant="h4" gutterBottom>
+            JSON Preview
+          </Typography>
+          <pre
+            style={{
+              background: "#f4f4f4",
+              padding: "16px",
+              borderRadius: "8px",
+              overflowX: "auto",
+            }}
+          >
+            {JSON.stringify({ content }, null, 2)}
+          </pre>
+        </Box>
+      </Drawer>
+    </Box>
   );
 };
 
