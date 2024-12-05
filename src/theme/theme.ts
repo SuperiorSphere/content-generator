@@ -115,6 +115,7 @@ const theme = createTheme({
         root: {
           textTransform: "none", // Prevent uppercase transformation
           borderRadius: "8px",
+          fontFamily: "Montserrat",
         },
       },
     },

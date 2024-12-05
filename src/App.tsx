@@ -3,7 +3,7 @@ import ElementForm from "./components/ElementForm";
 import ContentPreview from "./components/ContentPreview";
 import { ContentElement } from "./types/LessonTypes";
 import { stripIds } from "./utils/stripIds";
-import { Button } from "@mui/material";
+import { Button, Typography } from "@mui/material";
 import { Areas } from "./types/Areas";
 import Dropdown from "./components/Dropdown";
 
@@ -37,8 +37,12 @@ const App: React.FC = () => {
 
   return (
     <div className="parent">
-      <h1>Lesson/Rule Generator</h1>
-      <h2>Area</h2>
+      <Typography variant="h1" gutterBottom>
+        Lesson/Rule Generator
+      </Typography>
+      <Typography variant="h2" gutterBottom>
+        Area
+      </Typography>
       <Dropdown
         value={area}
         onChange={(area: string) => setArea(area as Areas)}
@@ -46,9 +50,13 @@ const App: React.FC = () => {
         label="Select Area"
         width="400px"
       />
-      <h2>Add Content</h2>
+      <Typography variant="h2" gutterBottom sx={{ marginTop: "12px" }}>
+        Add Content
+      </Typography>
       <ElementForm addContentElement={addContentElement} />
-      <h2>Preview</h2>
+      <Typography variant="h2" gutterBottom sx={{ marginTop: "20px" }}>
+        Preview
+      </Typography>
       <ContentPreview
         content={content}
         setContent={setContent}

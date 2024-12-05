@@ -41,7 +41,7 @@ const ContentPreview: React.FC<Props> = ({
             style={{
               background: content.length > 0 ? "#f9f9f9" : "#eee",
               padding: "20px",
-              minHeight: "150px",
+              //minHeight: "150px",
               border: "1px dashed #ccc",
             }}
           >

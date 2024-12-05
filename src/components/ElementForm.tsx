@@ -1,8 +1,14 @@
 import React, { useState } from "react";
-import { ContentElement, TextListElementType, ListEntry, ContentType } from "../types/LessonTypes";
+import {
+  ContentElement,
+  TextListElementType,
+  ListEntry,
+  ContentType,
+} from "../types/LessonTypes";
 import { v4 as uuidv4 } from "uuid";
 import Dropdown from "./Dropdown";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
+import TextInput from "./TextInput";
 
 interface Props {
   addContentElement: (element: ContentElement) => void;
@@ -38,90 +44,96 @@ const ElementForm: React.FC<Props> = ({ addContentElement }) => {
         label="Select Content Type"
         width="400px"
       />
+      <Box sx={{ marginTop: "20px" }}>
+        {type === "text" && (
+          <div>
+            <TextInput
+              label="Text"
+              value={data.text}
+              onChange={(value) => setData({ text: value })}
+              placeholder="Enter some text"
+              fullWidth
+            />
+          </div>
+        )}
 
-      {type === "text" && (
-        <div>
-          <label>Text:</label>
-          <input
-            type="text"
-            value={data.text || ""}
-            onChange={(e) => setData({ text: e.target.value })}
-          />
-        </div>
-      )}
+        {type === "textList" && (
+          <div>
+            <label>Type:</label>
+            <select
+              value={data.type || TextListElementType.DASH}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  type: e.target.value as TextListElementType,
+                })
+              }
+              className="dropdonw"
+            >
+              <option value={TextListElementType.DASH}>Dash</option>
+              <option value={TextListElementType.POINT}>Point</option>
+              <option value={TextListElementType.NUMBER}>Number</option>
+            </select>
+            <label>List Items:</label>
+            <textarea
+              value={
+                data.textList?.map((item: ListEntry) => item.text).join(", ") ||
+                ""
+              }
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  textList: e.target.value.split(",").map((item) => ({
+                    id: uuidv4(),
+                    text: item.trim(),
+                  })),
+                })
+              }
+            />
+          </div>
+        )}
 
-      {type === "textList" && (
-        <div>
-          <label>Type:</label>
-          <select
-            value={data.type || TextListElementType.DASH}
-            onChange={(e) =>
-              setData({ ...data, type: e.target.value as TextListElementType })
-            }
-            className="dropdonw"
-          >
-            <option value={TextListElementType.DASH}>Dash</option>
-            <option value={TextListElementType.POINT}>Point</option>
-            <option value={TextListElementType.NUMBER}>Number</option>
-          </select>
-          <label>List Items:</label>
-          <textarea
-            value={
-              data.textList?.map((item: ListEntry) => item.text).join(", ") ||
-              ""
-            }
-            onChange={(e) =>
-              setData({
-                ...data,
-                textList: e.target.value.split(",").map((item) => ({
-                  id: uuidv4(),
-                  text: item.trim(),
-                })),
-              })
-            }
-          />
-        </div>
-      )}
+        {type === "title" && (
+          <div>
+            <TextInput
+              label="Title"
+              value={data.text}
+              onChange={(value) => setData({ text: value })}
+              placeholder="Enter some text"
+              fullWidth
+            />
+          </div>
+        )}
 
-      {type === "title" && (
-        <div>
-          <label>Title:</label>
-          <input
-            type="text"
-            value={data.title || ""}
-            onChange={(e) => setData({ title: e.target.value })}
-          />
-        </div>
-      )}
+        {type === "subtitle" && (
+          <div>
+            <TextInput
+              label="Subtitle"
+              value={data.text}
+              onChange={(value) => setData({ text: value })}
+              placeholder="Enter some text"
+              fullWidth
+            />
+          </div>
+        )}
 
-      {type === "subtitle" && (
-        <div>
-          <label>Subtitle:</label>
-          <input
-            type="text"
-            value={data.subtitle || ""}
-            onChange={(e) => setData({ subtitle: e.target.value })}
-          />
-        </div>
-      )}
-
-      {type === "image" && (
-        <div>
-          <label>Image URL:</label>
-          <input
-            type="text"
-            value={data.image || ""}
-            onChange={(e) => setData({ image: e.target.value })}
-          />
-          <label>Caption:</label>
-          <input
-            type="text"
-            value={data.caption || ""}
-            onChange={(e) => setData({ ...data, caption: e.target.value })}
-          />
-        </div>
-      )}
-
+        {type === "image" && (
+          <div>
+            <label>Image URL:</label>
+            <input
+              type="text"
+              value={data.image || ""}
+              onChange={(e) => setData({ image: e.target.value })}
+            />
+            <label>Caption:</label>
+            <input
+              type="text"
+              value={data.caption || ""}
+              onChange={(e) => setData({ ...data, caption: e.target.value })}
+            />
+          </div>
+        )}
+      </Box>
       {/* Add similar handling for curiosity, important, books, and author */}
 
       <Button onClick={handleAddElement}>Add Element</Button>
