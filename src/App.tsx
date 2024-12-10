@@ -3,7 +3,7 @@ import ElementForm from "./components/ElementForm";
 import ContentPreview from "./components/ContentPreview";
 import { ContentElement, LessonContent } from "./types/LessonTypes";
 import { stripIds } from "./utils/stripIds";
-import { Box, Button, Typography, Drawer } from "@mui/material";
+import { Box, Button, Typography, Drawer, TextField } from "@mui/material";
 import { Areas } from "./types/Areas";
 import Dropdown from "./components/Dropdown";
 import { v4 as uuidv4 } from "uuid";
@@ -11,8 +11,9 @@ import { v4 as uuidv4 } from "uuid";
 const App: React.FC = () => {
   const [content, setContent] = useState<ContentElement[]>([]);
   const [area, setArea] = useState<Areas>(Areas.ZEN);
+  const [lessonTitle, setLessonTitle] = useState<string>("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  console.log(JSON.stringify({ content }, null, 2));
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const areaOptions = Object.values(Areas).map((area) => ({
     value: area as string,
@@ -36,7 +37,7 @@ const App: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = "lessonContent.json";
+    link.download = `${lessonTitle}.json`;
     link.click();
   };
 
@@ -75,13 +76,32 @@ const App: React.FC = () => {
         <Typography variant="h2" gutterBottom>
           Area
         </Typography>
-        <Dropdown
-          value={area}
-          onChange={(area: string) => setArea(area as Areas)}
-          options={areaOptions}
-          label="Select Area"
-          width="400px"
-        />
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
+            marginBottom: 3,
+          }}
+        >
+          <Dropdown
+            value={area}
+            onChange={(area: string) => setArea(area as Areas)}
+            options={areaOptions}
+            label="Select Area"
+            width="200px"
+          />
+          <Box sx={{ flex: 1 }}>
+            <TextField
+              label="Lesson Title"
+              value={lessonTitle}
+              onChange={(e) => setLessonTitle(e.target.value)}
+              fullWidth
+              variant="outlined"
+              placeholder="INTRODUCTION_TO_STOICISM"
+            />
+          </Box>
+        </Box>
         <Typography
           variant="h2"
           gutterBottom
@@ -89,7 +109,11 @@ const App: React.FC = () => {
         >
           Add Content
         </Typography>
-        <ElementForm addContentElement={addContentElement} area={area} />
+        <ElementForm
+          addContentElement={addContentElement}
+          area={area}
+          editingIndex={editingIndex}
+        />
         <Typography variant="h2" gutterBottom sx={{ marginTop: "20px" }}>
           Preview
         </Typography>
@@ -97,6 +121,8 @@ const App: React.FC = () => {
           content={content}
           setContent={setContent}
           removeContentElement={removeContentElement}
+          editingIndex={editingIndex}
+          setEditingIndex={setEditingIndex}
         />
         <Box sx={{ display: "flex", gap: 2, marginTop: "16px" }}>
           <Button variant="contained" onClick={exportContentAsJson}>

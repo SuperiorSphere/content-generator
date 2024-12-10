@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import "./ContentPreview.css";
 import {
   DragDropContext,
@@ -11,9 +11,10 @@ import {
   ContentElement,
   TextListElementTypeEnum,
 } from "../types/LessonTypes";
-import { Box, Typography } from "@mui/material";
+import { Box, Button, Typography } from "@mui/material";
 import ImageWithFallback from "./ImageWithFallback";
 import { getListCharacter } from "../utils/listUtils";
+import TextForm from "./elements/TextForm";
 
 const DEV_IMAGE_URL =
   "https://firebasestorage.googleapis.com/v0/b/superiorsphere-dev.appspot.com/o/images%2F";
@@ -22,13 +23,43 @@ interface Props {
   content: ContentElement[];
   setContent: (newContent: ContentElement[]) => void;
   removeContentElement: (index: number) => void;
+  editingIndex: number | null;
+  setEditingIndex: React.Dispatch<React.SetStateAction<number | null>>;
 }
 
 const ContentPreview: React.FC<Props> = ({
   content,
   setContent,
   removeContentElement,
+  editingIndex,
+  setEditingIndex,
 }) => {
+  const [tempData, setTempData] = useState<any>({});
+  console.log("editingIndex", editingIndex);
+  console.log("tempData", tempData);
+
+  const startEditing = (index: number) => {
+    setEditingIndex(index);
+    setTempData(content[index]); // Load current data into temporary state
+  };
+
+  const saveEdit = () => {
+    if (editingIndex !== null) {
+      const updatedContent = [...content];
+      updatedContent[editingIndex] = {
+        id: content[editingIndex].id,
+        ...tempData,
+      };
+      setContent(updatedContent);
+      setEditingIndex(null); // Exit editing mode
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditingIndex(null); // Discard changes and exit editing mode
+    setTempData({});
+  };
+
   const handleDragEnd = (result: DropResult) => {
     const { source, destination } = result;
 
@@ -61,7 +92,12 @@ const ContentPreview: React.FC<Props> = ({
               </p>
             ) : (
               content.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
+                <Draggable
+                  key={item.id}
+                  draggableId={item.id}
+                  index={index}
+                  isDragDisabled={editingIndex !== null}
+                >
                   {(provided) => (
                     <div
                       ref={provided.innerRef}
@@ -82,10 +118,80 @@ const ContentPreview: React.FC<Props> = ({
                       <Box sx={{ flexGrow: 1 }}>
                         {(() => {
                           if ("title" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <TextForm
+                                    value={tempData.title}
+                                    onChange={(value) =>
+                                      setTempData({ title: value || "" })
+                                    }
+                                    label="Title"
+                                  />
+
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => saveEdit()}
+                                      style={{ marginRight: "8px" }}
+                                      variant="contained"
+                                    >
+                                      Save
+                                    </Button>
+                                  )}
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => cancelEdit()}
+                                      style={{
+                                        marginRight: "8px",
+                                        backgroundColor: "red",
+                                      }}
+                                      variant="contained"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  )}
+                                </Box>
+                              );
+                            }
                             return (
                               <Typography variant="h2">{item.title}</Typography>
                             );
                           } else if ("subtitle" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <TextForm
+                                    value={tempData.subtitle}
+                                    onChange={(value) =>
+                                      setTempData({ subtitle: value || "" })
+                                    }
+                                    label="Subtitle"
+                                  />
+
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => saveEdit()}
+                                      style={{ marginRight: "8px" }}
+                                      variant="contained"
+                                    >
+                                      Save
+                                    </Button>
+                                  )}
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => cancelEdit()}
+                                      style={{
+                                        marginRight: "8px",
+                                        backgroundColor: "red",
+                                      }}
+                                      variant="contained"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  )}
+                                </Box>
+                              );
+                            }
                             return (
                               <Typography variant="h4">
                                 {item.subtitle}
@@ -304,19 +410,29 @@ const ContentPreview: React.FC<Props> = ({
                           return <p>Other Content</p>;
                         })()}
                       </Box>
-                      <button
-                        onClick={() => removeContentElement(index)}
-                        style={{
-                          background: "transparent",
-                          border: "none",
-                          color: "black",
-                          fontSize: "24px",
-                          fontWeight: "bold",
-                          cursor: "pointer",
-                        }}
-                      >
-                        &times;
-                      </button>
+                      {editingIndex === null && (
+                        <Button
+                          onClick={() => startEditing(index)}
+                          style={{ marginRight: "8px" }}
+                        >
+                          Edit
+                        </Button>
+                      )}
+                      {editingIndex !== index && editingIndex === null && (
+                        <button
+                          onClick={() => removeContentElement(index)}
+                          style={{
+                            background: "transparent",
+                            border: "none",
+                            color: "black",
+                            fontSize: "24px",
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                          }}
+                        >
+                          &times;
+                        </button>
+                      )}
                     </div>
                   )}
                 </Draggable>

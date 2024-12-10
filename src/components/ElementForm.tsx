@@ -20,9 +20,14 @@ import AuthorForm from "./elements/AuthorForm";
 interface Props {
   addContentElement: (element: ContentElement) => void;
   area: Areas;
+  editingIndex: number | null;
 }
 
-const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
+const ElementForm: React.FC<Props> = ({
+  addContentElement,
+  area,
+  editingIndex,
+}) => {
   const [type, setType] = useState<ContentType>("text");
   const [data, setData] = useState<any>({});
   const [currentItem, setCurrentItem] = useState<string>("");
@@ -130,6 +135,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
           <TextForm
             value={data.text}
             onChange={(value) => setData({ title: value || "" })}
+            label="Title"
           />
         )}
 
@@ -137,6 +143,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
           <TextForm
             value={data.text}
             onChange={(value) => setData({ subtitle: value || "" })}
+             label="Title"
           />
         )}
 
@@ -144,6 +151,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
           <TextForm
             value={data.text}
             onChange={(value) => setData({ curiosity: value || "" })}
+            label="Curiosity"
           />
         )}
 
@@ -151,6 +159,7 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
           <TextForm
             value={data.text}
             onChange={(value) => setData({ important: value || "" })}
+            label="Important"
           />
         )}
 
@@ -179,7 +188,11 @@ const ElementForm: React.FC<Props> = ({ addContentElement, area }) => {
       <Button
         variant="outlined"
         onClick={handleAddElement}
-        disabled={isEmpty(data) || Object.values(data).every((value) => !value)}
+        disabled={
+          isEmpty(data) ||
+          Object.values(data).every((value) => !value) ||
+          editingIndex !== null
+        }
       >
         Add {type}
       </Button>

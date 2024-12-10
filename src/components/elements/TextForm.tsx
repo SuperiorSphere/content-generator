@@ -5,14 +5,15 @@ import TextInput from "../TextInput";
 interface Props {
   value: string;
   onChange: (value: string) => void;
+  label?: string;
 }
 
-const TextForm: React.FC<Props> = ({ value, onChange }) => {
+const TextForm: React.FC<Props> = ({ value, onChange, label="Text" }) => {
   return (
     <Box>
       <div>
         <TextInput
-          label="Text"
+          label={label}
           value={value}
           onChange={onChange}
           placeholder="Enter some text"
