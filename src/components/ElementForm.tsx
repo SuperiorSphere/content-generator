@@ -143,7 +143,7 @@ const ElementForm: React.FC<Props> = ({
           <TextForm
             value={data.text}
             onChange={(value) => setData({ subtitle: value || "" })}
-             label="Title"
+             label="Subtitle"
           />
         )}
 
