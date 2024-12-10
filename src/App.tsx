@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import ElementForm from "./components/ElementForm";
 import ContentPreview from "./components/ContentPreview";
 import { ContentElement, LessonContent } from "./types/LessonTypes";
@@ -7,6 +8,8 @@ import { Box, Button, Typography, Drawer, TextField } from "@mui/material";
 import { Areas } from "./types/Areas";
 import Dropdown from "./components/Dropdown";
 import { v4 as uuidv4 } from "uuid";
+
+const COOKIE_NAME = "content";
 
 const App: React.FC = () => {
   const [content, setContent] = useState<ContentElement[]>([]);
@@ -20,6 +23,21 @@ const App: React.FC = () => {
     value: area as string,
     label: area.replace(/_/g, " "),
   }));
+
+  // Save content to cookies
+  const saveContentToCookies = (content: ContentElement[]) => {
+    Cookies.set(COOKIE_NAME, JSON.stringify(content), {
+      expires: 7,
+      path: "/",
+      sameSite: "Lax",
+    });
+  };
+
+  // Load content from cookies
+  const loadContentFromCookies = () => {
+    const savedContent = Cookies.get(COOKIE_NAME);
+    return savedContent ? JSON.parse(savedContent) : [];
+  };
 
   const addContentElement = (element: ContentElement) => {
     setContent([...content, element]);
@@ -66,6 +84,24 @@ const App: React.FC = () => {
     };
     reader.readAsText(file);
   };
+
+  const clearContent = () => {
+    setContent([]); // Clears all content by setting it to an empty array
+    Cookies.remove(COOKIE_NAME);
+  };
+
+  // Load content on first render
+  useEffect(() => {
+    const savedContent = loadContentFromCookies();
+    console.log("Saved content from cookies", savedContent);
+    setContent(savedContent);
+  }, []);
+
+  // Save content to cookies whenever it changes
+  useEffect(() => {
+    //console.log("Saving content", content);
+    saveContentToCookies(content);
+  }, [content]);
 
   return (
     <Box sx={{ display: "flex", height: "100vh" }}>
@@ -144,6 +180,9 @@ const App: React.FC = () => {
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           >
             {isSidebarOpen ? "Close Sidebar" : "View JSON"}
+          </Button>
+          <Button variant="contained" color="error" onClick={clearContent}>
+            Clear All Content
           </Button>
         </Box>
       </Box>
