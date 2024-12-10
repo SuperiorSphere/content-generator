@@ -8,8 +8,7 @@ import {
 } from "../types/LessonTypes";
 import { v4 as uuidv4 } from "uuid";
 import Dropdown from "./Dropdown";
-import { Box, Button, Typography } from "@mui/material";
-import TextInput from "./TextInput";
+import { Box, Button } from "@mui/material";
 import { Areas } from "../types/Areas";
 import { isEmpty } from "lodash";
 import TextForm from "./elements/TextForm";
