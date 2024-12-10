@@ -14,6 +14,7 @@ const App: React.FC = () => {
   const [lessonTitle, setLessonTitle] = useState<string>("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  console.log(JSON.stringify(content, null, 2));
 
   const areaOptions = Object.values(Areas).map((area) => ({
     value: area as string,
@@ -123,6 +124,7 @@ const App: React.FC = () => {
           removeContentElement={removeContentElement}
           editingIndex={editingIndex}
           setEditingIndex={setEditingIndex}
+          area={area}
         />
         <Box sx={{ display: "flex", gap: 2, marginTop: "16px" }}>
           <Button variant="contained" onClick={exportContentAsJson}>

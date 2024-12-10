@@ -15,6 +15,11 @@ import { Box, Button, Typography } from "@mui/material";
 import ImageWithFallback from "./ImageWithFallback";
 import { getListCharacter } from "../utils/listUtils";
 import TextForm from "./elements/TextForm";
+import ImageForm from "./elements/ImageForm";
+import { Areas } from "../types/Areas";
+import AuthorForm from "./elements/AuthorForm";
+import BooksForm from "./elements/BooksForm";
+import TextListForm from "./elements/TextListForm";
 
 const DEV_IMAGE_URL =
   "https://firebasestorage.googleapis.com/v0/b/superiorsphere-dev.appspot.com/o/images%2F";
@@ -25,6 +30,7 @@ interface Props {
   removeContentElement: (index: number) => void;
   editingIndex: number | null;
   setEditingIndex: React.Dispatch<React.SetStateAction<number | null>>;
+  area: Areas;
 }
 
 const ContentPreview: React.FC<Props> = ({
@@ -33,10 +39,13 @@ const ContentPreview: React.FC<Props> = ({
   removeContentElement,
   editingIndex,
   setEditingIndex,
+  area,
 }) => {
   const [tempData, setTempData] = useState<any>({});
-  console.log("editingIndex", editingIndex);
-  console.log("tempData", tempData);
+  const [currentItem, setCurrentItem] = useState<string>("");
+  const [listType, setListType] = useState<TextListElementTypeEnum>(
+    TextListElementTypeEnum.DASH
+  );
 
   const startEditing = (index: number) => {
     setEditingIndex(index);
@@ -45,19 +54,47 @@ const ContentPreview: React.FC<Props> = ({
 
   const saveEdit = () => {
     if (editingIndex !== null) {
+      const { currentBook, ...cleanedData } = tempData; // Remove currentBook
       const updatedContent = [...content];
       updatedContent[editingIndex] = {
         id: content[editingIndex].id,
-        ...tempData,
+        ...cleanedData,
       };
       setContent(updatedContent);
       setEditingIndex(null); // Exit editing mode
+      setTempData({}); // Clear tempData
     }
   };
 
   const cancelEdit = () => {
     setEditingIndex(null); // Discard changes and exit editing mode
     setTempData({});
+  };
+
+  const handleAddListItem = () => {
+    if (!currentItem) return;
+    setTempData((prev: any) => ({
+      ...prev,
+      textList: [
+        ...(prev.textList || []),
+        { id: Date.now().toString(), text: currentItem },
+      ],
+    }));
+    setCurrentItem("");
+  };
+
+  const handleRemoveListItem = (id: string) => {
+    setTempData((prev: any) => ({
+      ...prev,
+      textList: prev.textList.filter((item: any) => item.id !== id),
+    }));
+  };
+
+  const handleListTypeChange = (newType: TextListElementTypeEnum) => {
+    setTempData((prev: any) => ({
+      ...prev,
+      type: newType,
+    }));
   };
 
   const handleDragEnd = (result: DropResult) => {
@@ -198,12 +235,84 @@ const ContentPreview: React.FC<Props> = ({
                               </Typography>
                             );
                           } else if ("text" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <TextForm
+                                    value={tempData.text}
+                                    onChange={(value) =>
+                                      setTempData({ text: value || "" })
+                                    }
+                                    label="Text"
+                                  />
+
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => saveEdit()}
+                                      style={{ marginRight: "8px" }}
+                                      variant="contained"
+                                    >
+                                      Save
+                                    </Button>
+                                  )}
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => cancelEdit()}
+                                      style={{
+                                        marginRight: "8px",
+                                        backgroundColor: "red",
+                                      }}
+                                      variant="contained"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  )}
+                                </Box>
+                              );
+                            }
                             return (
                               <Typography className="pMedium">
                                 {item.text}
                               </Typography>
                             );
                           } else if ("image" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <ImageForm
+                                    data={tempData}
+                                    setData={setTempData}
+                                    area={tempData.area || area} // Pass the selected area or default to current area
+                                    extension={tempData.extension || "jpg"} // Default to jpg if not set
+                                    setExtension={(value) =>
+                                      setTempData((prevData: any) => ({
+                                        ...prevData,
+                                        extension: value,
+                                      }))
+                                    }
+                                  />
+
+                                  <Button
+                                    onClick={() => saveEdit()}
+                                    style={{ marginRight: "8px" }}
+                                    variant="contained"
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    onClick={() => cancelEdit()}
+                                    style={{
+                                      marginRight: "8px",
+                                      backgroundColor: "red",
+                                    }}
+                                    variant="contained"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </Box>
+                              );
+                            }
+
                             const finalUrl =
                               DEV_IMAGE_URL +
                               encodeURIComponent(item.image) +
@@ -217,6 +326,44 @@ const ContentPreview: React.FC<Props> = ({
                               </Box>
                             );
                           } else if ("textList" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <TextListForm
+                                    data={tempData}
+                                    currentItem={currentItem}
+                                    setCurrentItem={setCurrentItem}
+                                    handleAddListItem={handleAddListItem}
+                                    handleRemoveListItem={handleRemoveListItem}
+                                    listType={listType}
+                                    setListType={(value) => {
+                                      const newType =
+                                        typeof value === "function"
+                                          ? value(tempData.type)
+                                          : value;
+                                      setTempData((prev: any) => ({
+                                        ...prev,
+                                        type: newType,
+                                      }));
+                                    }}
+                                  />
+                                  <Button
+                                    onClick={saveEdit}
+                                    variant="contained"
+                                    style={{ marginRight: "8px" }}
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    onClick={cancelEdit}
+                                    variant="contained"
+                                    style={{ backgroundColor: "red" }}
+                                  >
+                                    Cancel
+                                  </Button>
+                                </Box>
+                              );
+                            }
                             return (
                               <Box sx={{ padding: "8px", paddingTop: "20px" }}>
                                 {item.textList.map((elem, pos) => {
@@ -230,6 +377,41 @@ const ContentPreview: React.FC<Props> = ({
                               </Box>
                             );
                           } else if ("curiosity" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <TextForm
+                                    value={tempData.curiosity}
+                                    onChange={(value) =>
+                                      setTempData({ curiosity: value || "" })
+                                    }
+                                    label="Curiosity"
+                                  />
+
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => saveEdit()}
+                                      style={{ marginRight: "8px" }}
+                                      variant="contained"
+                                    >
+                                      Save
+                                    </Button>
+                                  )}
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => cancelEdit()}
+                                      style={{
+                                        marginRight: "8px",
+                                        backgroundColor: "red",
+                                      }}
+                                      variant="contained"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  )}
+                                </Box>
+                              );
+                            }
                             return (
                               <Box
                                 sx={{
@@ -244,6 +426,41 @@ const ContentPreview: React.FC<Props> = ({
                               </Box>
                             );
                           } else if ("important" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <TextForm
+                                    value={tempData.important}
+                                    onChange={(value) =>
+                                      setTempData({ important: value || "" })
+                                    }
+                                    label="Important"
+                                  />
+
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => saveEdit()}
+                                      style={{ marginRight: "8px" }}
+                                      variant="contained"
+                                    >
+                                      Save
+                                    </Button>
+                                  )}
+                                  {editingIndex !== null && (
+                                    <Button
+                                      onClick={() => cancelEdit()}
+                                      style={{
+                                        marginRight: "8px",
+                                        backgroundColor: "red",
+                                      }}
+                                      variant="contained"
+                                    >
+                                      Cancel
+                                    </Button>
+                                  )}
+                                </Box>
+                              );
+                            }
                             return (
                               <Box
                                 sx={{
@@ -258,6 +475,69 @@ const ContentPreview: React.FC<Props> = ({
                               </Box>
                             );
                           } else if ("books" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <BooksForm
+                                    data={tempData}
+                                    currentBook={
+                                      tempData.currentBook || {
+                                        title: "",
+                                        author: "",
+                                      }
+                                    }
+                                    setCurrentBook={(value) =>
+                                      setTempData((prevData: any) => ({
+                                        ...prevData,
+                                        currentBook: value,
+                                      }))
+                                    }
+                                    handleAddBook={() => {
+                                      if (
+                                        !tempData.currentBook?.title ||
+                                        !tempData.currentBook?.author
+                                      )
+                                        return;
+
+                                      setTempData((prevData: any) => ({
+                                        ...prevData,
+                                        books: [
+                                          ...(prevData.books || []),
+                                          { ...prevData.currentBook },
+                                        ],
+                                        currentBook: { title: "", author: "" },
+                                      }));
+                                    }}
+                                    handleRemoveBook={(bookIndex) =>
+                                      setTempData((prevData: any) => ({
+                                        ...prevData,
+                                        books: prevData.books.filter(
+                                          (_: any, i: number) => i !== bookIndex
+                                        ),
+                                      }))
+                                    }
+                                  />
+
+                                  <Button
+                                    onClick={() => saveEdit()}
+                                    style={{ marginRight: "8px" }}
+                                    variant="contained"
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    onClick={() => cancelEdit()}
+                                    style={{
+                                      marginRight: "8px",
+                                      backgroundColor: "red",
+                                    }}
+                                    variant="contained"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </Box>
+                              );
+                            }
                             return (
                               <Box>
                                 <Typography variant="h4">Books</Typography>
@@ -269,24 +549,35 @@ const ContentPreview: React.FC<Props> = ({
                                 ))}
                               </Box>
                             );
-                          } else if (
-                            "books" in item &&
-                            Array.isArray(item.books)
-                          ) {
-                            return (
-                              <Box sx={{ flexGrow: 1 }}>
-                                <Typography variant="h4">Books</Typography>
-                                {item.books.map(
-                                  (book: Book, bookIndex: number) => (
-                                    <Typography key={bookIndex}>
-                                      <strong>{book.title}</strong> by{" "}
-                                      {book.author}
-                                    </Typography>
-                                  )
-                                )}
-                              </Box>
-                            );
                           } else if ("author" in item) {
+                            if (editingIndex === index) {
+                              return (
+                                <Box>
+                                  <AuthorForm
+                                    data={tempData}
+                                    setData={setTempData}
+                                  />
+
+                                  <Button
+                                    onClick={() => saveEdit()}
+                                    style={{ marginRight: "8px" }}
+                                    variant="contained"
+                                  >
+                                    Save
+                                  </Button>
+                                  <Button
+                                    onClick={() => cancelEdit()}
+                                    style={{
+                                      marginRight: "8px",
+                                      backgroundColor: "red",
+                                    }}
+                                    variant="contained"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </Box>
+                              );
+                            }
                             const {
                               fullName,
                               url,
